@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ej.hgj.dao.auth.PoAuthInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.ej.hgj.model.auth.PoAuthInfoDo" >
+    <id column="AUTH_ID" property="authId" jdbcType="CHAR" />
+    <id column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+    <id column="PO_SEQ_ID" property="poSeqId" jdbcType="CHAR" />
+    <result column="STAT" property="stat" jdbcType="CHAR" />
+    <result column="IS_ADD" property="isAdd" jdbcType="CHAR" />
+    <result column="IS_UPD" property="isUpd" jdbcType="CHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultExtMap" extends="BaseResultMap" type="com.ej.hgj.model.ext.PoAuthInfoExtDo">
+    <result column="AUTH_LEVEL" property="authLevel" jdbcType="INTEGER" />
+    <result column="AUTH_DESC" property="authDesc" jdbcType="VARCHAR" />
+    <result column="PARENT_ID" property="parentId" jdbcType="CHAR" />
+    <result column="HAVE_SON" property="haveSon" jdbcType="CHAR" />
+    <result column="ORDER_NO" property="orderNo" jdbcType="INTEGER" />
+    <result column="ENB_FLAG" property="enbFlag" jdbcType="CHAR" />
+    <result column="AUTH_TYPE" property="authType" jdbcType="CHAR" />
+    <result column="ACTION" property="action" jdbcType="VARCHAR" />
+    <result column="IS_CON_DISP" property="isConDisp" jdbcType="CHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    AUTH_ID, CUST_ID, PO_SEQ_ID, STAT, IS_ADD, IS_UPD
+  </sql>
+  
+  <sql id="Base_Column_List_Ext" >
+    o.AUTH_ID, o.CUST_ID, o.PO_SEQ_ID, o.STAT, o.IS_ADD, o.IS_UPD, 
+    m.AUTH_LEVEL, m.AUTH_DESC, m.PARENT_ID, m.HAVE_SON, m.ORDER_NO,
+    m.ENB_FLAG, m.AUTH_TYPE, m.ACTION, m.IS_CON_DISP
+  </sql>
+  
+  <select id="selectPoAuthInfo" resultMap="BaseResultExtMap" parameterType="com.ej.hgj.model.ext.PoAuthInfoExtDo" >
+    select
+    <include refid="Base_Column_List_Ext" />
+    from po_auth_info o
+    LEFT JOIN pm_auth_info m
+    ON o.auth_id = m.auth_id
+    where o.cust_id = #{custId,jdbcType=VARCHAR}
+      	and o.po_seq_id = #{poSeqId,jdbcType=CHAR}
+      <if test="authId != null and authId != ''" >
+      	and o.auth_id = #{authId,jdbcType=CHAR}
+      </if>
+      <if test="stat != null and stat != ''" >
+      	and o.stat = #{stat,jdbcType=CHAR}
+      </if>
+      <if test="isAdd != null and isAdd != ''" >
+      	and o.is_add = #{isAdd,jdbcType=CHAR}
+      </if>
+      <if test="isUpd != null and isUpd != ''" >
+      	and o.is_upd = #{isUpd,jdbcType=CHAR}
+      </if>
+      <if test="enbFlag != null and enbFlag != ''" >
+      	and m.enb_flag = #{enbFlag,jdbcType=CHAR}
+      </if>
+      <if test="isConDisp != null and isConDisp != ''" >
+      	and m.is_con_disp = #{isConDisp,jdbcType=CHAR}
+      </if>
+    order by m.auth_level ASC, m.parent_id ASC, m.order_no ASC
+  </select>
+</mapper>

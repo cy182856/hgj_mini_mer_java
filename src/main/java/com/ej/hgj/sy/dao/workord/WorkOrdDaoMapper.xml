@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ej.hgj.sy.dao.workord.WorkOrdDaoMapper">
+
+    <resultMap id="BaseMap" type="com.ej.hgj.entity.workord.WorkOrd">
+        <result column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="woNo" jdbcType="VARCHAR" property="repairNum"/>
+        <result column="OrgID" jdbcType="VARCHAR" property="orgId"/>
+        <result column="WOID" jdbcType="VARCHAR" property="woId"/>
+        <result column="WorkPos" jdbcType="VARCHAR" property="workPos"/>
+        <result column="CstID" jdbcType="VARCHAR" property="cstId"/>
+        <result column="RSWay" jdbcType="VARCHAR" property="rsWay"/>
+        <result column="Orders" jdbcType="VARCHAR" property="orders"/>
+        <result column="CreateTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="WorkOrdState" jdbcType="VARCHAR" property="repairStatus"/>
+        <result column="CstName" jdbcType="VARCHAR" property="cstName"/>
+        <result column="OrgName" jdbcType="VARCHAR" property="orgName"/>
+        <result column="WONoBasicName" jdbcType="VARCHAR" property="quesType"/>
+        <result column="ordersTime" jdbcType="TIMESTAMP" property="ordersTime"/>
+        <result column="completionTime" jdbcType="TIMESTAMP" property="completionTime"/>
+        <result column="labourCost" jdbcType="DECIMAL" property="labourCost"/>
+        <result column="materialCost" jdbcType="DECIMAL" property="materialCost"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, woNo, workOrdState, orders, ordersTime, completionTime, labourCost, materialCost
+    </sql>
+
+    <!-- 根据报修单号与状态查询-->
+    <select id="getCsWorkOrd" resultMap="BaseMap" parameterType="java.lang.String" >
+        select
+            ID as id, WONo as woNo, workordstate workOrdState
+        from cs_workord
+        where WONo = #{woNo} and workordstate = #{ordState}
+    </select>
+
+    <!-- 根据报修单ID查询-->
+    <select id="getCostSum" resultMap="BaseMap" parameterType="java.lang.String" >
+        select
+            sum(c.LabourCost) as labourCost,
+            sum(c.MaterialCostSum) materialCost
+        from CS_WorkQuestion c
+        where c.WorkOrdID = #{woId}
+    </select>
+
+    <!-- 查询列表-->
+    <select id="getList" resultMap="BaseMap" parameterType="java.lang.String" >
+        select
+            -- ID
+            ID as id,
+            -- 报修单号
+            WONo as woNo,
+            -- 报修状态
+            workordstate as workOrdState,
+            -- 接单人
+            Orders as orders,
+            -- 开工时间-接单时间
+            OrdersTime as ordersTime,
+            -- 完工时间
+            CompletionTime as completionTime
+        from cs_workord
+        where WONo in
+        <foreach collection="woNoList" item="woNo" index="index" open="(" close=")" separator=",">
+            #{woNo}
+        </foreach>
+    </select>
+
+    <!-- 查询列表-->
+    <select id="getListSy" resultMap="BaseMap" parameterType="com.ej.hgj.entity.workord.WorkOrd" >
+        select
+            -- 主键
+            w.ID,
+            -- 报修单号
+            w.WONo,
+            -- 项目号
+            w.OrgID,
+            -- 工作位置id
+            w.WOID,
+            -- 工作位置
+            w.WorkPos,
+            -- 客户id
+            w.CstID,
+            -- 报事方式
+            w.RSWay,
+            -- 接单人
+            w.Orders,
+            -- 创建时间
+            w.CreateTime,
+            -- 报修状态
+            w.WorkOrdState,
+            -- 客户名称
+            w.CstName,
+            -- 项目名称
+            w.OrgName,
+            -- 工作位置类型名称,报修类型
+            w.WONoBasicName,
+            -- 开工时间,接单时间
+            w.OrdersTime,
+            -- 完工时间
+            w.CompletionTime
+
+        from CS_WorkOrd w
+        left join House h on h.ID = w.WOID
+        where 1=1 and  w.CreateTime > DATEADD(MONTH, -3, GETDATE())
+        <if test='repairStatus == "1"'>
+            and w.WorkOrdState = 'WOSta_Sub'
+        </if>
+        <if test='repairStatus == "2"'>
+            and w.WorkOrdState = 'WOSta_Proc'
+        </if>
+        <if test='repairStatus == "3"'>
+            and w.WorkOrdState in ('WOSta_Finish', 'WOSta_Visit')
+        </if>
+        <if test='repairStatus == "10"'>
+            and w.WorkOrdState = 'WOSta_Finish'
+        </if>
+        <if test="budIdList != null and budIdList.size() > 0">
+            and h.BudID in
+            <foreach collection="budIdList" item="budId" index="index" open="(" close=")" separator=",">
+                #{budId,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+        order by w.CreateTime desc
+
+    </select>
+
+    <!-- 查询列表-->
+    <select id="getRepairInfo" resultMap="BaseMap" parameterType="com.ej.hgj.entity.workord.WorkOrd" >
+        select
+        -- 主键
+        ID,
+        -- 报修单号
+        WONo,
+        -- 项目号
+        OrgID,
+        -- 工作位置id
+        WOID,
+        -- 工作位置
+        WorkPos,
+        -- 客户id
+        CstID,
+        -- 报事方式
+        RSWay,
+        -- 接单人
+        Orders,
+        -- 创建时间
+        CreateTime,
+        -- 报修状态
+        WorkOrdState,
+        -- 客户名称
+        CstName,
+        -- 项目名称
+        OrgName,
+        -- 工作位置类型名称,报修类型
+        WONoBasicName,
+        -- 开工时间,接单时间
+        OrdersTime,
+        -- 完工时间
+        CompletionTime
+
+        from CS_WorkOrd
+        where WOnO = #{repairNum}
+        <if test='repairStatus == "1"'>
+            and WorkOrdState = 'WOSta_Sub'
+        </if>
+        <if test='repairStatus == "2"'>
+            and WorkOrdState = 'WOSta_Proc'
+        </if>
+        <if test='repairStatus == "3"'>
+            and WorkOrdState in ('WOSta_Finish', 'WOSta_Visit')
+        </if>
+        <if test='repairStatus == "10"'>
+            and WorkOrdState = 'WOSta_Finish'
+        </if>
+        order by CreateTime desc
+
+    </select>
+
+    <!-- 查询公共报修单号-->
+    <select id="getGgBxWoNo" resultMap="BaseMap" parameterType="java.lang.String" >
+        select
+               top 1 woNo
+        from cs_workord
+        where RSDate between CONVERT(VARCHAR(10), getdate(),120)+' 00:00:00.000' and CONVERT(VARCHAR(10), getdate(),120)+' 23:59:59.999'
+          and WONo like 'GGBX%' and orgid = #{proNum} order by rsdate desc
+    </select>
+
+    <!-- 查询客户报修单号-->
+    <select id="getKhBxWoNo" resultMap="BaseMap" parameterType="java.lang.String" >
+        select
+            top 1 woNo
+        from cs_workord
+        where RSDate between CONVERT(VARCHAR(10), getdate(),120)+' 00:00:00.000' and CONVERT(VARCHAR(10), getdate(),120)+' 23:59:59.999'
+          and WONo like 'KHBX%' and orgid = #{proNum} order by rsdate desc
+    </select>
+
+</mapper>

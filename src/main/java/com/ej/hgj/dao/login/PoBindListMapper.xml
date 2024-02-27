@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ej.hgj.dao.login.PoBindListMapper">
+  <resultMap id="BaseResultMap" type="com.ej.hgj.model.PoBindListDo">
+    <id column="auth_corp_id" jdbcType="VARCHAR" property="authCorpId" />
+    <id column="ew_usr_id" jdbcType="VARCHAR" property="ewUsrId" />
+    <result column="cust_id" jdbcType="VARCHAR" property="custId" />
+    <result column="po_seq_id" jdbcType="CHAR" property="poSeqId" />
+    <result column="stat" jdbcType="CHAR" property="stat" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    auth_corp_id, ew_usr_id, cust_id, po_seq_id, stat
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from po_bind_list
+    where auth_corp_id = #{authCorpId,jdbcType=VARCHAR}
+      and ew_usr_id = #{ewUsrId,jdbcType=VARCHAR}
+  </select>
+</mapper>

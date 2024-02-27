@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ej.hgj.dao.login.PropOperInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ej.hgj.model.PropOperInfoDo">
+    <id column="CUST_ID" jdbcType="VARCHAR" property="custId" />
+    <id column="PO_SEQ_ID" jdbcType="CHAR" property="poSeqId" />
+    <result column="PO_NAME" jdbcType="VARCHAR" property="poName" />
+    <result column="DEPT_NAME" jdbcType="VARCHAR" property="deptName" />
+    <result column="STAT" jdbcType="CHAR" property="stat" />
+    <result column="PO_WX_ID" jdbcType="VARCHAR" property="poWxId" />
+    <result column="PO_MP" jdbcType="VARCHAR" property="poMp" />
+    <result column="IS_INFO_PUB" jdbcType="CHAR" property="isInfoPub" />
+    <result column="HGJ_OPEN_ID" jdbcType="VARCHAR" property="hgjOpenId" />
+    <result column="RATE_SCORE" jdbcType="INTEGER" property="rateScore" />
+    <result column="RATE_CNT" jdbcType="INTEGER" property="rateCnt" />
+    <result column="OPEN_DATE" jdbcType="CHAR" property="openDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    CUST_ID, PO_SEQ_ID, PO_NAME, DEPT_NAME, STAT, PO_WX_ID, PO_MP, IS_INFO_PUB, HGJ_OPEN_ID, RATE_SCORE, RATE_CNT, OPEN_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from prop_oper_info
+    where cust_id = #{custId,jdbcType=VARCHAR}
+      and po_seq_id = #{poSeqId,jdbcType=CHAR}
+  </select>
+</mapper>

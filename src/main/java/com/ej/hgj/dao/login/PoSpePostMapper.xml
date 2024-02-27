@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ej.hgj.dao.login.PoSpePostMapper" >
+  <resultMap id="BaseResultMap" type="com.ej.hgj.model.PoSpePostDo" >
+    <id column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+    <id column="PO_SEQ_ID" property="poSeqId" jdbcType="CHAR" />
+    <result column="POST_ID" property="postId" jdbcType="CHAR" />
+    <result column="STAT" property="stat" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CUST_ID, PO_SEQ_ID, POST_ID, STAT
+  </sql>
+	<resultMap id="extensionResultMap" extends="BaseResultMap" type="com.ej.hgj.model.ext.PoSpePostExtDo">
+		<result column="PO_NAME" property="poName" jdbcType="VARCHAR" />
+		<result column="DEPT_NAME" property="deptName" jdbcType="VARCHAR" />
+		<result column="PO_WX_ID" property="poWxId" jdbcType="VARCHAR" />
+		<result column="PO_MP" property="poMp" jdbcType="VARCHAR" />
+		<result column="IS_INFO_PUB" property="isInfoPub" jdbcType="CHAR" />
+		<result column="HGJ_OPEN_ID" property="hgjOpenId" jdbcType="VARCHAR" />
+		<result column="RATE_SCORE" property="rateScore" jdbcType="INTEGER" />
+		<result column="RATE_CNT" property="rateCnt" jdbcType="INTEGER" />
+		<result column="OPEN_DATE" property="openDate" jdbcType="CHAR" />
+	</resultMap>
+
+  <select id="queryPoSpePostByCondition" resultMap="BaseResultMap" parameterType="com.ej.hgj.model.PoSpePostDo">
+  	    select 
+    	<include refid="Base_Column_List" />
+	    from po_spe_post
+	    where cust_id = #{custId,jdbcType=VARCHAR}
+	    <if test="poSeqId != null" >
+	      and po_seq_id = #{poSeqId,jdbcType=CHAR}
+      	</if>
+	    <if test="stat != null" >
+	      and stat = #{stat,jdbcType=CHAR}
+      	</if>
+  	    <if test="postId != null" >
+       	  and post_id = #{postId,jdbcType=CHAR}
+      	</if>
+  </select>
+
+</mapper>

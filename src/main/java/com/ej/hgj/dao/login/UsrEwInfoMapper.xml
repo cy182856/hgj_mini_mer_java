@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ej.hgj.dao.login.UsrEwInfoMapper">
+  <resultMap id="BaseResultMap" type="com.ej.hgj.model.UsrEwInfoDo">
+    <id column="cust_id" jdbcType="VARCHAR" property="custId" />
+    <id column="auth_corp_id" jdbcType="VARCHAR" property="authCorpId" />
+    <result column="auth_corp_name" jdbcType="VARCHAR" property="authCorpName" />
+    <result column="permanent_code" jdbcType="VARCHAR" property="permanentCode" />
+    <result column="agent_id" jdbcType="VARCHAR" property="agentId" />
+    <result column="access_token" jdbcType="VARCHAR" property="accessToken" />
+    <result column="create_token_time" jdbcType="VARCHAR" property="createTokenTime" />
+    <result column="token_expire" jdbcType="INTEGER" property="tokenExpire" />
+    <result column="stat" jdbcType="CHAR" property="stat" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    cust_id, auth_corp_id, auth_corp_name, permanent_code, agent_id, access_token, create_token_time,
+    token_expire, stat
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from usr_ew_info
+    where auth_corp_id = #{authCorpId,jdbcType=VARCHAR}
+  </select>
+</mapper>
