@@ -25,7 +25,7 @@ public class QyApiUtils {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String POST = Constant.HTTP_POST;
-    
+
     private static final String GET = Constant.HTTP_GET;
 
     /** 获取应用凭证 */
@@ -36,50 +36,55 @@ public class QyApiUtils {
 
     /** 获取预授权码 */
     private static final String GET_PRE_AUTH_CODE = " https://qyapi.weixin.qq.com/cgi-bin/service/get_pre_auth_code?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 获取企业永久授权码 */
     private static final String GET_PERMANENT_CODE = "https://qyapi.weixin.qq.com/cgi-bin/service/get_permanent_code?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 获取企业授权信息 */
     private static final String GET_AUTH_INFO = "https://qyapi.weixin.qq.com/cgi-bin/service/get_auth_info?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 获取企业凭证 */
     private static final String GET_CORP_TOKEN = "https://qyapi.weixin.qq.com/cgi-bin/service/get_corp_token?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 获取授权企业管理员列表 */
     private static final String GET_ADMIN_LIST = "https://qyapi.weixin.qq.com/cgi-bin/service/get_admin_list?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 设置授权配置 */
     private static final String SET_SESSION_INFO = "https://qyapi.weixin.qq.com/cgi-bin/service/set_session_info?suite_access_token=SUITE_ACCESS_TOKEN";
-    
+
     /** 获取部门列表 */
     private static final String GET_DEPARTMENT_LIST = "https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=";
-    
+
     /** 获取部门成员 */
     private static final String GET_SIMPLE_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/simplelist?access_token=";
-    
+
     /** 获取部门成员详情 */
     private static final String GET_USER_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/list?access_token=";
-    
+
     /** 读取成员 */
     private static final String GET_USER = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=";
-    
+
     /** 上传待转译文件 */
     private static final String MEDIA_UPLOAD = "https://qyapi.weixin.qq.com/cgi-bin/service/media/upload?provider_access_token=ACCESS_TOKEN&type=TYPE";
-    
+
     /** 异步通讯录id转译 */
     private static final String ID_TRANSLATE = "https://qyapi.weixin.qq.com/cgi-bin/service/contact/id_translate?provider_access_token=ACCESS_TOKEN";
-    
+
     /** 获取异步任务结果 */
     private static final String BATCH_JOB_RESULT = "https://qyapi.weixin.qq.com/cgi-bin/service/batch/getresult?provider_access_token=";
-    
+
     /** 临时登录凭证校验接口 */
     private static final String JS_CODE2SESSION  = "https://qyapi.weixin.qq.com/cgi-bin/service/miniprogram/jscode2session?suite_access_token=";
 
     private static final String JS_CODE2_SESSION  = "https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?access_token=ACCESS_TOKEN&js_code=CODE&grant_type=authorization_code";
 
     // 服务商模式登录
-    private static final String JS_CODE2_SESSION_SERVICE  = "https://qyapi.weixin.qq.com/cgi-bin/service/auth/getuserinfo3rd?suite_access_token=SUITE_ACCESS_TOKEN&code=CODE";
+    // private static final String JS_CODE2_SESSION_SERVICE  = "https://qyapi.weixin.qq.com/cgi-bin/service/auth/getuserinfo3rd?suite_access_token=SUITE_ACCESS_TOKEN&code=CODE";
+    private static final String JS_CODE2_SESSION_SERVICE  = "https://qyapi.weixin.qq.com/cgi-bin/service/miniprogram/jscode2session?suite_access_token=SUITE_ACCESS_TOKEN&js_code=CODE&grant_type=authorization_code";
+
+    // userid转换
+    private static final String USERID_TO_OPENUSERID  = "https://qyapi.weixin.qq.com/cgi-bin/batch/userid_to_openuserid?access_token=ACCESS_TOKEN";
+
 
     /** 获取指定应用详情 */
     private static final String GET_SUITE_DETAIL_BY_AGENT_ID= "https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token=";
@@ -87,6 +92,23 @@ public class QyApiUtils {
     public static JSONObject jsCode2_Session(String token, String code) {
         JSONObject jsonObject = httpRequest(JS_CODE2_SESSION.replace("ACCESS_TOKEN", token).replace("CODE",code), GET, null);
         return jsonObject;
+    }
+
+    public static JSONObject jsCode2_Session_service(String token, String code) {
+        JSONObject jsonObject = httpRequest(JS_CODE2_SESSION_SERVICE.replace("SUITE_ACCESS_TOKEN", token).replace("CODE",code), GET, null);
+        return jsonObject;
+    }
+
+    public static JSONObject userIdConvert(String token, String userId) {
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        String[] userIdList = new String[]{userId};
+        params.put("userid_list", userIdList);
+        String jsonStr = com.alibaba.fastjson.JSONObject.toJSONString(params);
+        JSONObject jsonObject = httpRequest(USERID_TO_OPENUSERID.replace("ACCESS_TOKEN", token), POST, jsonStr);
+        if (jsonObject != null && jsonObject.containsKey("open_userid_list")) {
+            return jsonObject;
+        }
+        return null;
     }
 
     /**
@@ -130,60 +152,60 @@ public class QyApiUtils {
         return null;
     }
 
-    public static JSONObject httpRequest(String requestUrl, String requestMethod, String outputStr) {  
-        JSONObject jsonObject = null;  
-        StringBuffer buffer = new StringBuffer();  
-        try {  
-            // 创建SSLContext对象，并使用我们指定的信任管理器初始化  
-            TrustManager[] tm = { new MyX509TrustManager() };  
-            //SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE"); 
-            SSLContext sslContext = SSLContext.getInstance("TLS");  
-            sslContext.init(null, tm, new java.security.SecureRandom());  
-            // 从上述SSLContext对象中得到SSLSocketFactory对象  
-            SSLSocketFactory ssf = sslContext.getSocketFactory();  
-  
-            URL url = new URL(requestUrl);  
-            HttpsURLConnection httpUrlConn = (HttpsURLConnection) url.openConnection();  
-            httpUrlConn.setSSLSocketFactory(ssf);  
-  
-            httpUrlConn.setDoOutput(true);  
-            httpUrlConn.setDoInput(true);  
-            httpUrlConn.setUseCaches(false);  
-            // 设置请求方式（GET/POST）  
-            httpUrlConn.setRequestMethod(requestMethod);  
-  
-            if ("GET".equalsIgnoreCase(requestMethod))  
-                httpUrlConn.connect();  
-  
-            // 当有数据需要提交时  
-            if (null != outputStr) {  
-                OutputStream outputStream = httpUrlConn.getOutputStream();  
-                // 注意编码格式，防止中文乱码  
-                outputStream.write(outputStr.getBytes("UTF-8"));  
-                outputStream.close();  
-            }  
-  
-            // 将返回的输入流转换成字符串  
-            InputStream inputStream = httpUrlConn.getInputStream();  
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");  
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  
-  
-            String str = null;  
-            while ((str = bufferedReader.readLine()) != null) {  
-                buffer.append(str);  
-            }  
-            bufferedReader.close();  
-            inputStreamReader.close();  
-            // 释放资源  
-            inputStream.close();  
-            inputStream = null;  
-            httpUrlConn.disconnect();  
+    public static JSONObject httpRequest(String requestUrl, String requestMethod, String outputStr) {
+        JSONObject jsonObject = null;
+        StringBuffer buffer = new StringBuffer();
+        try {
+            // 创建SSLContext对象，并使用我们指定的信任管理器初始化
+            TrustManager[] tm = { new MyX509TrustManager() };
+            //SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tm, new java.security.SecureRandom());
+            // 从上述SSLContext对象中得到SSLSocketFactory对象
+            SSLSocketFactory ssf = sslContext.getSocketFactory();
+
+            URL url = new URL(requestUrl);
+            HttpsURLConnection httpUrlConn = (HttpsURLConnection) url.openConnection();
+            httpUrlConn.setSSLSocketFactory(ssf);
+
+            httpUrlConn.setDoOutput(true);
+            httpUrlConn.setDoInput(true);
+            httpUrlConn.setUseCaches(false);
+            // 设置请求方式（GET/POST）
+            httpUrlConn.setRequestMethod(requestMethod);
+
+            if ("GET".equalsIgnoreCase(requestMethod))
+                httpUrlConn.connect();
+
+            // 当有数据需要提交时
+            if (null != outputStr) {
+                OutputStream outputStream = httpUrlConn.getOutputStream();
+                // 注意编码格式，防止中文乱码
+                outputStream.write(outputStr.getBytes("UTF-8"));
+                outputStream.close();
+            }
+
+            // 将返回的输入流转换成字符串
+            InputStream inputStream = httpUrlConn.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String str = null;
+            while ((str = bufferedReader.readLine()) != null) {
+                buffer.append(str);
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+            // 释放资源
+            inputStream.close();
+            inputStream = null;
+            httpUrlConn.disconnect();
             System.out.println("HTTP请求返回：" + buffer.toString());
             jsonObject = JSONObject.parseObject(buffer.toString());
         } catch (ConnectException ce) {
         } catch (Exception e) {
         }
-        return jsonObject;  
+        return jsonObject;
     }
 
 }

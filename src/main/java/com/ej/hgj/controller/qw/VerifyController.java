@@ -143,7 +143,7 @@ public class VerifyController extends BaseController {
             if(infoType.equals("suite_ticket")){
                 ConstantConfig config = new ConstantConfig();
                 config.setConfigKey(Constant.SUITE_TICKET);
-                config.setConfigValue(suiteMap.get("SuiteId") + "");
+                config.setConfigValue(suiteMap.get("SuiteTicket") + "");
                 constantConfDaoMapper.update(config);
             }
             // 请求事件类型-授权成功通知

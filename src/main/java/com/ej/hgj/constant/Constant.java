@@ -69,12 +69,12 @@ public class Constant {
     /**
      * 回调/通用开发参数Token, 两者解密算法一样，所以为方便设为一样
      */
-    public static final String TOKEN = "xxxx";
+    public static final String TOKEN = "rrMqvxjLlf5K6Ugziic7vCE";
 
     /**
      * 回调/通用开发参数EncodingAESKey, 两者解密算法一样，所以为方便设为一样
      */
-    public static final String EncodingAESKey = "xxxx";
+    public static final String EncodingAESKey = "C1hpaqLZhZtjhLBZPttzqm6kDFYFX7nqq5aPE5KIX3p";
 
     /**
      * 第三方应用的suite_ticket

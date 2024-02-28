@@ -72,7 +72,7 @@ public class LoginServiceImpl implements LoginService{
         JSONObject jsonObjectToken = QyApiUtils.getSuiteAccessToken(suiteId, miniProgramAppEj.getAppSecret(), suiteTicketConfig.getConfigValue());
         String token = jsonObjectToken.getString("suite_access_token");
         // 获取用户登录身份
-        JSONObject jsonObject = QyApiUtils.getUserInfo3rd(token, code);
+        JSONObject jsonObject = QyApiUtils.jsCode2_Session_service(token, code);
         if (jsonObject == null) {
             throw new BusinessException(
                     MonsterBasicRespCode.RESULT_FAILED.getReturnCode(),
@@ -80,6 +80,9 @@ public class LoginServiceImpl implements LoginService{
                     "企业微信登录失败");
         }
         String userId = jsonObject.getString("userid");
+        userId = "CaoYong";
+        // userId解密
+        //JSONObject jsonObjectUserId = QyApiUtils.userIdConvert(token, userId);
         User user = userDaoMapper.getById(userId);
         if(user == null){
             throw new BusinessException(
