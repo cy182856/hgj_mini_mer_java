@@ -98,6 +98,13 @@ public class PoAuthInfoController extends BaseController {
 			List<Menu> allMenuList = menuService.getMenuList(menu);
 			// 获取用户角色
 			UserRole userRole = userRoleService.getByStaffId(stuffId);
+			if(userRole == null){
+				logger.info("权限未分配");
+//				jsonObject.put(Constant.RESP_CODE, MonsterBasicRespCode.RESULT_FAILED.getReturnCode());
+//				jsonObject.put(Constant.ERR_CODE, JiamsvBasicRespCode.NO_PERMISSION.getRespCode());
+//				jsonObject.put(Constant.ERR_DESC, JiamsvBasicRespCode.NO_PERMISSION.getRespDesc());
+				return jsonObject;
+			}
 			// 查询角色已拥有的企微菜单权限
 			List<Menu> alreadyMenuListAll = menuService.findMenuByRoleId(userRole.getRoleId());
 			// 企微权限树

@@ -484,7 +484,8 @@ public class RepairController extends BaseController {
 		// 查询管家绑定的楼栋
 		List<String> budIdList = new ArrayList<>();
 		UserBuild userBuild = new UserBuild();
-		userBuild.setMobile(user.getMobile());
+		//userBuild.setMobile(user.getMobile());
+		userBuild.setMobile(user.getUserId());
 		List<UserBuild> userBuildList = userBuildDaoMapper.getList(userBuild);
 		if(!userBuildList.isEmpty()){
 			for(UserBuild build : userBuildList){
@@ -501,7 +502,10 @@ public class RepairController extends BaseController {
 		WorkOrd workOrd = new WorkOrd();
 		workOrd.setRepairStatus(repairRequestVo.getRepairStatus());
 		workOrd.setBudIdList(budIdList);
-		List<WorkOrd> list = workOrdDaoMapper.getListSy(workOrd);
+		List<WorkOrd> list = new ArrayList<>();
+		if(!budIdList.isEmpty()){
+			list = workOrdDaoMapper.getListSy(workOrd);
+		}
 		PageInfo<WorkOrd> pageInfo = new PageInfo<>(list);
 		int pageNumTotal = (int) Math.ceil((double)pageInfo.getTotal()/(double)repairRequestVo.getPageSize());
 		list = pageInfo.getList();
@@ -545,7 +549,8 @@ public class RepairController extends BaseController {
 		//repairLog.setCstCode(repairRequestVo.getCstCode());
 		//repairLog.setWxOpenId(repairRequestVo.getWxOpenId());
 
-		repairLog.setCstMobile(user.getMobile());
+		//repairLog.setCstMobile(user.getMobile());
+		repairLog.setCstMobile(user.getUserId());
 		repairLog.setRepairNum(repairNum);
 		PageHelper.offsetPage((repairRequestVo.getPageNum()-1) * repairRequestVo.getPageSize(),repairRequestVo.getPageSize());
 		List<RepairLog> list = repairLogDaoMapper.getList(repairLog);
@@ -639,10 +644,11 @@ public class RepairController extends BaseController {
 		//User user = userDaoMapper.getByStaffId(userId);
 		User user = userDaoMapper.getByUserId(userId);
 		RepairResponseVo repairResponseVo = new RepairResponseVo();
-		RepairLog repairLog = new RepairLog();
-		repairLog.setProjectNum(user.getProjectNum());
-		repairLog.setCstMobile(user.getMobile());
-		List<HgjHouse> list = hgjHouseDaoMapper.queryByMobile(user.getMobile());
+//		RepairLog repairLog = new RepairLog();
+//		repairLog.setProjectNum(user.getProjectNum());
+//		repairLog.setCstMobile(user.getMobile());
+		//List<HgjHouse> list = hgjHouseDaoMapper.queryByMobile(user.getMobile());
+		List<HgjHouse> list = hgjHouseDaoMapper.queryByUserId(user.getUserId());
 		logger.info("list返回记录数:" + list != null ? list.size() + "":0 + "");
 		logger.info(list != null ? list.size() + "":0 + "");
 		repairResponseVo.setHouseList(list);

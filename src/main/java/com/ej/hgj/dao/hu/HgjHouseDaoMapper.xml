@@ -140,7 +140,27 @@
     </select>
 
     <!-- 查询管家服务楼栋-->
-    <select id="queryByMobile" resultMap="BaseMap" parameterType="java.lang.String" >
+<!--    <select id="queryByMobile" resultMap="BaseMap" parameterType="java.lang.String" >-->
+<!--        SELECT-->
+<!--            p.project_name as org_name,-->
+<!--            h.bud_name-->
+<!--        FROM-->
+<!--            s_house h-->
+<!--                LEFT JOIN t_pro_config p ON p.project_num = h.org_id-->
+<!--        WHERE-->
+<!--                h.bud_id IN (-->
+<!--                SELECT-->
+<!--                    bud_id-->
+<!--                FROM-->
+<!--                    t_user_build-->
+<!--                WHERE-->
+<!--                    mobile = #{mobile}-->
+<!--                  AND delete_flag = 0-->
+<!--            )-->
+<!--        group by p.project_name,h.bud_name-->
+<!--    </select>-->
+
+    <select id="queryByUserId" resultMap="BaseMap" parameterType="java.lang.String" >
         SELECT
             p.project_name as org_name,
             h.bud_name
@@ -154,7 +174,7 @@
                 FROM
                     t_user_build
                 WHERE
-                    mobile = #{mobile}
+                    mobile = #{userId}
                   AND delete_flag = 0
             )
         group by p.project_name,h.bud_name

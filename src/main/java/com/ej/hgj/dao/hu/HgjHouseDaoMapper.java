@@ -22,7 +22,9 @@ public interface HgjHouseDaoMapper {
 
     List<HgjHouse> queryRoomNum (String budId);
 
-    List<HgjHouse> queryByMobile (String mobile);
+    //List<HgjHouse> queryByMobile (String mobile);
+
+    List<HgjHouse> queryByUserId (String userId);
 
 
 
