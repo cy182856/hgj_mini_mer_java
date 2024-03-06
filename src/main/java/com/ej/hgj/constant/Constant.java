@@ -52,7 +52,19 @@ public class Constant {
     /**
      * 服务商CorpID  宜悦
      */
-    public static final String CorpID = "ww4c8c3c6639dd7aac";
+    public static final String ServiceCorpID = "ww4c8c3c6639dd7aac";
+
+    /**
+     * 凡享资产CorpID
+     */
+    // public static final String CorpID = "ww79026506cd2090f3";
+    public static final String CorpID = "wp2U43agAA5zYxOldvud9BfjBng3oPeQ";
+
+    /**
+     * 智慧凡享模板ID
+     */
+    public static final String TempID = "dkf051512c3419cfb0";
+
     /**
      * 服务商身份的调用凭证 宜悦
      */
@@ -69,12 +81,12 @@ public class Constant {
     /**
      * 回调/通用开发参数Token, 两者解密算法一样，所以为方便设为一样
      */
-    public static final String TOKEN = "rrMqvxjLlf5K6Ugziic7vCE";
+    public static final String TOKEN = "83jFV6LJBRfY";
 
     /**
      * 回调/通用开发参数EncodingAESKey, 两者解密算法一样，所以为方便设为一样
      */
-    public static final String EncodingAESKey = "C1hpaqLZhZtjhLBZPttzqm6kDFYFX7nqq5aPE5KIX3p";
+    public static final String EncodingAESKey = "oPlOLz68lW023aYcVvT6Lp4mTw39kTOC1aVxNes5twL";
 
     /**
      * 第三方应用的suite_ticket

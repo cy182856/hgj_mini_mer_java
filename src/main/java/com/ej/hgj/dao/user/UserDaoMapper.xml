@@ -48,11 +48,18 @@
     </select>
 
     <!-- 根据员工号查询-->
-    <select id="getByStaffId" resultMap="BaseMap" parameterType="java.lang.String" >
+<!--    <select id="getByStaffId" resultMap="BaseMap" parameterType="java.lang.String" >-->
+<!--        select-->
+<!--        <include refid="Base_Column_List" />-->
+<!--        from t_user-->
+<!--        where staff_id = #{id} and delete_flag = 0-->
+<!--    </select>-->
+
+    <select id="getByUserId" resultMap="BaseMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />
         from t_user
-        where staff_id = #{id} and delete_flag = 0
+        where user_id = #{userId} and delete_flag = 0
     </select>
 
     <insert id="insertList" parameterType="java.util.List">

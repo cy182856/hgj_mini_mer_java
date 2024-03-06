@@ -117,7 +117,7 @@
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
             </if>
         </set>
-        where corp_id=#{authCorpId,jdbcType=VARCHAR}
+        where corp_id=#{corpId,jdbcType=VARCHAR}
     </update>
 
     <!-- 删除-->

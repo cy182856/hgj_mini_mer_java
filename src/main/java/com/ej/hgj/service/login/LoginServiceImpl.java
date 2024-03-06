@@ -3,11 +3,13 @@ package com.ej.hgj.service.login;
 import com.alibaba.fastjson.JSONObject;
 import com.ej.hgj.constant.Constant;
 import com.ej.hgj.dao.config.ConstantConfDaoMapper;
+import com.ej.hgj.dao.corp.CorpDaoMapper;
 import com.ej.hgj.dao.login.*;
 import com.ej.hgj.dao.user.UserDaoMapper;
 import com.ej.hgj.dao.user.UsrConfMapper;
 import com.ej.hgj.dao.user.UsrInfoMapper;
 import com.ej.hgj.entity.config.ConstantConfig;
+import com.ej.hgj.entity.corp.Corp;
 import com.ej.hgj.entity.login.LoginInfo;
 import com.ej.hgj.entity.login.PoSpePostVo;
 import com.ej.hgj.entity.user.User;
@@ -39,6 +41,9 @@ public class LoginServiceImpl implements LoginService{
     @Autowired
     private ConstantConfDaoMapper constantConfDaoMapper;
 
+    @Autowired
+    private CorpDaoMapper corpDaoMapper;
+
     @Override
     public String login(String code, String suiteId) {
         logger.info("企业微信登录, code:", code, "， 企业ID:", suiteId);
@@ -59,20 +64,23 @@ public class LoginServiceImpl implements LoginService{
                     JiamsvBasicRespCode.INFO_IS_NOT_EXIST.getRespCode(),
                     "查询用户信息失败");
         }
-        return user.getStaffId();
+        return user.getUserId();
     }
-
 
     @Override
     public String serviceLogin(String code, String suiteId) {
-        logger.info("企业微信服务商登录, code:", code, "， 应用ID:", suiteId);
-        ConstantConfig suiteTicketConfig = constantConfDaoMapper.getByKey(Constant.SUITE_TICKET);
-        ConstantConfig miniProgramAppEj = constantConfDaoMapper.getByKey(Constant.MINI_PROGRAM_APP_EJ);
+        logger.info("企业微信服务商登录, code:", code, "， 企业ID:", suiteId);
+        //ConstantConfig suiteTicketConfig = constantConfDaoMapper.getByKey(Constant.SUITE_TICKET);
+        //ConstantConfig miniProgramAppEj = constantConfDaoMapper.getByKey(Constant.MINI_PROGRAM_APP_EJ);
+        Corp corp = corpDaoMapper.getByCorpId(suiteId);
         // 获取第三方token
-        JSONObject jsonObjectToken = QyApiUtils.getSuiteAccessToken(suiteId, miniProgramAppEj.getAppSecret(), suiteTicketConfig.getConfigValue());
-        String token = jsonObjectToken.getString("suite_access_token");
+        //JSONObject jsonObjectToken = QyApiUtils.getSuiteAccessToken(suiteId, miniProgramAppEj.getAppSecret(), suiteTicketConfig.getConfigValue());
+        //String token = jsonObjectToken.getString("suite_access_token");
+        // 获取内部token
+        String token = QyApiUtils.getToken(corp.getCorpId(),corp.getPermanentCode());
         // 获取用户登录身份
-        JSONObject jsonObject = QyApiUtils.jsCode2_Session_service(token, code);
+        //JSONObject jsonObject = QyApiUtils.jsCode2_Session_service(token, code);
+        JSONObject jsonObject = QyApiUtils.jsCode2_Session(token, code);
         if (jsonObject == null) {
             throw new BusinessException(
                     MonsterBasicRespCode.RESULT_FAILED.getReturnCode(),
@@ -80,9 +88,9 @@ public class LoginServiceImpl implements LoginService{
                     "企业微信登录失败");
         }
         String userId = jsonObject.getString("userid");
-        userId = "CaoYong";
         // userId解密
         //JSONObject jsonObjectUserId = QyApiUtils.userIdConvert(token, userId);
+        //userId = jsonObjectUserId.getString("userid");
         User user = userDaoMapper.getById(userId);
         if(user == null){
             throw new BusinessException(
@@ -90,7 +98,7 @@ public class LoginServiceImpl implements LoginService{
                     JiamsvBasicRespCode.INFO_IS_NOT_EXIST.getRespCode(),
                     "查询用户信息失败");
         }
-        return user.getStaffId();
+        return user.getUserId();
     }
 
 

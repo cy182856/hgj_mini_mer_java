@@ -107,7 +107,8 @@ public class RepairController extends BaseController {
 	public RepairResponseVo repair(HttpServletRequest request, @RequestBody RepairRequestVo repairRequestVo) {
 		RepairResponseVo repairResponseVo = new RepairResponseVo();
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		// 报修类型
 		String repairType = repairRequestVo.getRepairType();
 		// 客户编号
@@ -423,7 +424,8 @@ public class RepairController extends BaseController {
 	@ResponseBody
 	public AjaxResult queryStages(HttpServletRequest request,@RequestBody RepairRequestVo repairRequestVo){
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		ProConfig proConfig = proConfDaoMapper.getByProjectNum(user.getProjectNum());
 		AjaxResult ajaxResult = new AjaxResult();
 		HashMap map = new HashMap();
@@ -443,7 +445,8 @@ public class RepairController extends BaseController {
 	@ResponseBody
 	public AjaxResult queryBuilding(HttpServletRequest request,@RequestBody RepairRequestVo repairRequestVo){
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		String grpCode = repairRequestVo.getGrpCode();
 		AjaxResult ajaxResult = new AjaxResult();
 		HashMap map = new HashMap();
@@ -476,7 +479,8 @@ public class RepairController extends BaseController {
 	@RequestMapping("/queryRepairLogSy.do")
 	public RepairResponseVo queryRepairLogSy(HttpServletRequest request, @RequestBody RepairRequestVo repairRequestVo) {
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		// 查询管家绑定的楼栋
 		List<String> budIdList = new ArrayList<>();
 		UserBuild userBuild = new UserBuild();
@@ -531,7 +535,8 @@ public class RepairController extends BaseController {
 	@RequestMapping("/queryRepairLog.do")
 	public RepairResponseVo queryRepairLog(HttpServletRequest request, @RequestBody RepairRequestVo repairRequestVo) {
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		RepairResponseVo repairResponseVo = new RepairResponseVo();
 		RepairLog repairLog = new RepairLog();
 		String repairNum = repairRequestVo.getRepairNum();
@@ -631,7 +636,8 @@ public class RepairController extends BaseController {
 	@RequestMapping("/serviceBuild.do")
 	public RepairResponseVo serviceBuild(HttpServletRequest request) {
 		String userId = TokenUtils.getUserId(request);
-		User user = userDaoMapper.getByStaffId(userId);
+		//User user = userDaoMapper.getByStaffId(userId);
+		User user = userDaoMapper.getByUserId(userId);
 		RepairResponseVo repairResponseVo = new RepairResponseVo();
 		RepairLog repairLog = new RepairLog();
 		repairLog.setProjectNum(user.getProjectNum());

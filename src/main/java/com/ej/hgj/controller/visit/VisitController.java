@@ -148,7 +148,8 @@ public class VisitController extends BaseController {
         String endTime = ed.toString();
 
         String userId = TokenUtils.getUserId(request);
-        User user = userDaoMapper.getByStaffId(userId);
+        //User user = userDaoMapper.getByStaffId(userId);
+        User user = userDaoMapper.getByUserId(userId);
         PageHelper.offsetPage((visitLogVo.getPageNum()-1) * visitLogVo.getPageSize(),visitLogVo.getPageSize());
         VisitLog visitLog = new VisitLog();
         visitLog.setProNum(user.getProjectNum());

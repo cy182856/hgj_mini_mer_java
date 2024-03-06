@@ -13,7 +13,9 @@ public interface UserDaoMapper {
 
     User getById(String id);
 
-    User getByStaffId(String id);
+    //User getByStaffId(String id);
+
+    User getByUserId(String userId);
 
     User queryUser(@Param("userName") String userName, @Param("password") String password);
 

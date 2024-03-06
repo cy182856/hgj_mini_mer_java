@@ -68,15 +68,22 @@ public class LoginController extends BaseController implements Serializable {
     @ResponseBody
     @RequestMapping("/login/wxlogin")
     public LoginResult wxLogin(HttpServletRequest httpRequest) {
+        String userId = "";
         String code = getParam(httpRequest, "code");
         String suiteId = getParam(httpRequest, "suite_id");
-        String staffId = loginService.serviceLogin(code, suiteId);
-        User user = userDaoMapper.getByStaffId(staffId);
+        // 东方渔人码头
+        if("wwaf0bc97996187867".equals(suiteId)){
+            userId = loginService.login(code, suiteId);
+        // 凡享
+        }else if("wp2U43agAA5zYxOldvud9BfjBng3oPeQ".equals(suiteId)){
+            userId = loginService.serviceLogin(code, suiteId);
+        }
+        User user = userDaoMapper.getByUserId(userId);
         LoginResult loginResult = new LoginResult();
         loginResult.setRespCode(MonsterBasicRespCode.SUCCESS.getReturnCode());
         loginResult.setErrCode(JiamsvBasicRespCode.SUCCESS.getRespCode());
         loginResult.setErrDesc(JiamsvBasicRespCode.SUCCESS.getRespDesc());
-        String token = TokenUtils.getToken(staffId, staffId);
+        String token = TokenUtils.getToken(userId, userId);
         loginResult.setToken(token);
         loginResult.setUserName(user.getUserName());
         return loginResult;
