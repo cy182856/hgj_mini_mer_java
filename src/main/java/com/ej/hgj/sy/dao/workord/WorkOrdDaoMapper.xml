@@ -20,6 +20,7 @@
         <result column="completionTime" jdbcType="TIMESTAMP" property="completionTime"/>
         <result column="labourCost" jdbcType="DECIMAL" property="labourCost"/>
         <result column="materialCost" jdbcType="DECIMAL" property="materialCost"/>
+        <result column="Elements" jdbcType="DECIMAL" property="elements"/>
     </resultMap>
     <sql id="Base_Column_List" >
         id, woNo, workOrdState, orders, ordersTime, completionTime, labourCost, materialCost
@@ -96,10 +97,12 @@
             -- 开工时间,接单时间
             w.OrdersTime,
             -- 完工时间
-            w.CompletionTime
-
+            w.CompletionTime,
+            -- 报修描述
+            cwq.QuesDesc as Elements
         from CS_WorkOrd w
         left join House h on h.ID = w.WOID
+        left join CS_WorkQuestion cwq on w.ID = cwq.WorkOrdID
         where 1=1 and  w.CreateTime > DATEADD(MONTH, -3, GETDATE())
         <if test='repairStatus == "1"'>
             and w.WorkOrdState = 'WOSta_Sub'

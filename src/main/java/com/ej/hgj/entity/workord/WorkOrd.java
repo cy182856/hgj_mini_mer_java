@@ -38,6 +38,8 @@ public class WorkOrd {
     private BigDecimal labourCost;
     // 材料费
     private BigDecimal materialCost;
+    // 报修描述
+    private String elements;
     // 开工时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
