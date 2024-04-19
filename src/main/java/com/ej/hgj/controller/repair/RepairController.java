@@ -30,10 +30,7 @@ import com.ej.hgj.sy.dao.workord.MaterialDaoMapper;
 import com.ej.hgj.sy.dao.workord.ReturnVisitDaoMapper;
 import com.ej.hgj.sy.dao.workord.WorkOrdDaoMapper;
 import com.ej.hgj.sy.dao.workord.WorkPosDaoMapper;
-import com.ej.hgj.utils.DateUtils;
-import com.ej.hgj.utils.GenerateUniqueIdUtil;
-import com.ej.hgj.utils.SyPostClient;
-import com.ej.hgj.utils.TokenUtils;
+import com.ej.hgj.utils.*;
 import com.ej.hgj.vo.repair.RepairRequestVo;
 import com.ej.hgj.vo.repair.RepairResponseVo;
 import com.github.pagehelper.PageHelper;
@@ -234,15 +231,16 @@ public class RepairController extends BaseController {
 				no = "GGBX" + config.getConfigValue();
 			}
 			// 公共区域报修工作位置 001-办公楼  002-商场
-			if("001".equals(hgjHouse.getGrpCode())){
-				ConstantConfig config = constantConfDaoMapper.getByKey("001");
-				//workPos = "东方渔人码头_办公楼_办公楼公共区域_办公楼公共区_办公楼公共区";
-				workPos = config.getConfigValue();
-			}else if("002".equals(hgjHouse.getGrpCode())){
-				ConstantConfig config = constantConfDaoMapper.getByKey("002");
-				//workPos = "东方渔人码头_商场_商场公共区域_商场公共区_商场公共区";
-				workPos = config.getConfigValue();
-			}
+//			if("001".equals(hgjHouse.getGrpCode())){
+//				ConstantConfig config = constantConfDaoMapper.getByKey("001");
+//				//workPos = "东方渔人码头_办公楼_办公楼公共区域_办公楼公共区_办公楼公共区";
+//				workPos = config.getConfigValue();
+//			}else if("002".equals(hgjHouse.getGrpCode())){
+//				ConstantConfig config = constantConfDaoMapper.getByKey("002");
+//				//workPos = "东方渔人码头_商场_商场公共区域_商场公共区_商场公共区";
+//				workPos = config.getConfigValue();
+//			}
+			workPos = s_workPos.getWorkPos();
 			//desc = s_workPos.getWorkPos() + ";" +repairRequestVo.getRepairDesc();
 			desc = repairRequestVo.getRepairDesc();
 		}
@@ -267,7 +265,7 @@ public class RepairController extends BaseController {
 			RepairLog repairLog = new RepairLog();
 			// 将图片数组转换为逗号分割的字符串
 			repairLog.setImage(saveImg(fileList,no));
-			repairLog.setId(GenerateUniqueIdUtil.getGuid());
+			repairLog.setId(TimestampGenerator.generateSerialNumber());
 			repairLog.setProjectNum(orgId);
 			repairLog.setProjectName(orgName);
 			repairLog.setRepairNum(no);
