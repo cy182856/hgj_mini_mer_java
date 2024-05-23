@@ -55,27 +55,45 @@ public class Constant {
     public static final String ServiceCorpID = "ww4c8c3c6639dd7aac";
 
     /**
+     * 东方渔人码头企业ID
+     */
+    public static final String OfwServiceCorpID = "wp2U43agAADAs8JoZ2FiTOES9yMBNWmw";
+
+    /**
      * 凡享资产CorpID
      */
     // public static final String CorpID = "ww79026506cd2090f3";
     public static final String CorpID = "wp2U43agAA5zYxOldvud9BfjBng3oPeQ";
 
     /**
+     * 东方渔人码头CorpID
+     */
+    public static final String OfwCorpID = "wwaf0bc97996187867";
+
+    /**
      * 智慧凡享模板ID
      */
     public static final String TempID = "dkf051512c3419cfb0";
-
+    /**
+     * OFW智慧凡享模板ID
+     */
+    public static final String OfwTempID = "dkfc2de7db915f146b";
     /**
      * 服务商身份的调用凭证 宜悦
      */
     public static final String ProviderSecret = "yiyDsOpKwdWX7c-XbQKZqd9LWM-nUa9SQF-ZXu58ROkXY8rrRu6bjMoGuJ4MTpsc";
 
     /**
-     * 应用的调用身份密钥 凡享物管小程序
+     * 应用的调用身份密钥 新弘智慧凡享模版ID，秘钥
      */
     //public static final String SuiteSecret = "eeeedfa5daa65e760069248871806ee4";
     public static final String MINI_PROGRAM_APP_EJ = "mini_program_app_ej";
 
+    /**
+     * 应用的调用身份密钥 OFW智慧凡享模版ID，秘钥
+     */
+    //public static final String SuiteSecret = "eeeedfa5daa65e760069248871806ee4";
+    public static final String MINI_PROGRAM_APP_OFW = "mini_program_app_ofw";
 
     // 回调相关
     /**
@@ -89,9 +107,14 @@ public class Constant {
     public static final String EncodingAESKey = "oPlOLz68lW023aYcVvT6Lp4mTw39kTOC1aVxNes5twL";
 
     /**
-     * 第三方应用的suite_ticket
+     * 第三方应用的suite_ticket,凡享
      */
     public static final String SUITE_TICKET = "suite_ticket";
+
+    /**
+     * 第三方应用的suite_ticket,ofw
+     */
+    public static final String SUITE_TICKET_OFW = "suite_ticket_ofw";
 
     /**
      * 企业授权码

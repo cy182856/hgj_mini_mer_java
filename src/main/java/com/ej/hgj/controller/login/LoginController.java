@@ -71,11 +71,12 @@ public class LoginController extends BaseController implements Serializable {
         String userId = "";
         String code = getParam(httpRequest, "code");
         String suiteId = getParam(httpRequest, "suite_id");
+        logger.info("----------------登录企业corp_id:" + suiteId + "---------------------");
         // 东方渔人码头
         if("wwaf0bc97996187867".equals(suiteId)){
             userId = loginService.login(code, suiteId);
         // 凡享
-        }else if("wp2U43agAA5zYxOldvud9BfjBng3oPeQ".equals(suiteId)){
+        }else {
             userId = loginService.serviceLogin(code, suiteId);
         }
         User user = userDaoMapper.getByUserId(userId);

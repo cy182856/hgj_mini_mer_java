@@ -44,7 +44,13 @@ public class VerifyController extends BaseController {
 
     @Autowired
     private CorpDaoMapper corpDaoMapper;
-    // 代开发模板回调及通用参数回调
+
+    /**
+     * 代开发模板回调及通用参数回调-凡享资产
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     @ResponseBody
     @RequestMapping(value = "/callback_verify.do")
     public void directCallback(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -102,9 +108,12 @@ public class VerifyController extends BaseController {
         }
     }
 
-
-
-    // 代开发应用回调-凡享资产
+    /**
+     * 代开发应用回调-凡享资产
+     * @param request
+     * @param response
+     * @throws Exception
+     */
     @ResponseBody
     @RequestMapping(value = "/callback_verify_app.do")
     public void callback_verify_app(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -160,6 +169,188 @@ public class VerifyController extends BaseController {
             //验证URL失败，错误原因请查看异常
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 代开发模板回调及通用参数回调-东方渔人码头
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping(value = "/callback_verify_ofw.do")
+    public void callback_verify_ofw(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        logger.info("企业微信模板及通用参数指令回调请求开始");
+        logger.info("-------------this is callback_verify.do---------------");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            // 企业微信加密签名
+            String msgSignature = request.getParameter("msg_signature");
+            // 时间戳 与nonce结合使用，用于防止请求重放攻击
+            String timestamp = request.getParameter("timestamp");
+            // 校验时字符串
+            String echostr = request.getParameter("echostr");
+            // 随机数 与timestamp结合使用，用于防止请求重放攻击
+            String nonce = request.getParameter("nonce");
+            logger.info("msgSignature: " + msgSignature);
+            logger.info("timestamp: " + timestamp);
+            logger.info("echostr: " + echostr);
+            logger.info("nonce: " + nonce);
+            if ("GET".equals(request.getMethod())) { // get请求表示是验证
+                String echostrDecrypt = null;
+                // 校验服务商公司id
+                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.OfwServiceCorpID);
+                echostrDecrypt = wxcpt.VerifyURL(msgSignature, timestamp, nonce, echostr);
+                logger.info("verifyurl echostr: " + echostrDecrypt);
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(echostrDecrypt);
+            } else { // post请求表示是真实数据
+                // 获取传过来的xml信息（密文）
+                InputStream ins = request.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ins));
+                StringBuilder postData = new StringBuilder();
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    postData.append(line);
+                }
+                logger.info("postData:" + postData);
+                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.OfwTempID);
+                String suiteXml = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, postData.toString());
+                logger.info("解析的明文是：" + suiteXml); // 此处明文是xml信息
+                Map suiteMap = WxUtil.parseXml(suiteXml);
+                if (suiteMap != null) {
+                    Thread thread = new Thread(new DataCheckThreadOfw(suiteMap));
+                    thread.start();
+                } else {
+                    logger.info("企业微信回调接口返回消息内容为空");
+                    return;
+                }
+                response.getWriter().write("success");
+            }
+            logger.info("企业微信模板及通用参数指令回调请求结束");
+        } catch (Exception e) {
+            //验证URL失败，错误原因请查看异常
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 代开发应用回调-东方渔人码头
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping(value = "/callback_verify_app_ofw.do")
+    public void callback_verify_app_ofw(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        logger.info("企业微信应用指令回调请求开始");
+        logger.info("-------------this is callback_verify_app_ofw.do---------------");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            // 企业微信加密签名
+            String msgSignature = request.getParameter("msg_signature");
+            // 时间戳 与nonce结合使用，用于防止请求重放攻击
+            String timestamp = request.getParameter("timestamp");
+            // 校验时字符串
+            String echostr = request.getParameter("echostr");
+            // 随机数 与timestamp结合使用，用于防止请求重放攻击
+            String nonce = request.getParameter("nonce");
+            logger.info("msgSignature: "+ msgSignature);
+            logger.info("timestamp: "+ timestamp);
+            logger.info("echostr: "+ echostr);
+            logger.info("nonce: "+ nonce);
+            if("GET".equals(request.getMethod())) { // get请求表示是验证
+                String echostrDecrypt = null;
+                // 校验服务商公司id
+                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.OfwCorpID);
+                echostrDecrypt = wxcpt.VerifyURL(msgSignature, timestamp, nonce, echostr);
+                logger.info("verifyurl echostr: " + echostrDecrypt);
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(echostrDecrypt);
+            }else { // post请求表示是真实数据
+                // 获取传过来的xml信息（密文）
+                InputStream ins = request.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ins));
+                StringBuilder postData = new StringBuilder();
+                String line = null;
+                while((line=bufferedReader.readLine()) != null) {
+                    postData.append(line);
+                }
+                logger.info("postData:"+ postData);
+                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.OfwCorpID);
+                String suiteXml = wxcpt.DecryptMsg(msgSignature, timestamp, nonce, postData.toString());
+                logger.info("解析的明文是：" + suiteXml); // 此处明文是xml信息
+                Map suiteMapOfw = WxUtil.parseXml(suiteXml);
+                if(suiteMapOfw != null) {
+                    Thread thread = new Thread(new DataCheckThreadOfw(suiteMapOfw));
+                    thread.start();
+                }else{
+                    logger.info("企业微信回调接口返回消息内容为空");
+                    return;
+                }
+                response.getWriter().write("success");
+            }
+            logger.info("企业微信应用指令回调请求结束");
+        } catch (Exception e) {
+            //验证URL失败，错误原因请查看异常
+            e.printStackTrace();
+        }
+    }
+
+    class DataCheckThreadOfw implements Runnable {
+        private  Map suiteMapOfw;
+        public DataCheckThreadOfw(Map suiteMapOfw) {
+            this.suiteMapOfw = suiteMapOfw;
+        }
+        @Override
+        public void run() {
+            logger.info("执行线程开始====================");
+            ConstantConfig miniProgramAppOfw = constantConfDaoMapper.getByKey(Constant.MINI_PROGRAM_APP_OFW);
+            ConstantConfig suiteTicket = constantConfDaoMapper.getByKey(Constant.SUITE_TICKET_OFW);
+            // 请求事件类型
+            Object object = suiteMapOfw.get("InfoType");
+            if(object != null) {
+                String infoType = object.toString();
+                // 请求事件类型-推送suite_ticket
+                if (infoType.equals("suite_ticket")) {
+                    ConstantConfig config = new ConstantConfig();
+                    config.setConfigKey(Constant.SUITE_TICKET_OFW);
+                    config.setConfigValue(suiteMapOfw.get("SuiteTicket") + "");
+                    config.setUpdateTime(new Date());
+                    constantConfDaoMapper.update(config);
+                }
+                // 请求事件类型-授权成功通知
+                if (infoType.equals("create_auth") || infoType.equals("reset_permanent_code")) {
+                    String authCode = suiteMapOfw.get("AuthCode").toString();
+                    // 获取应用token
+                    JSONObject jsonObjectToken = getSuiteAccessToken(miniProgramAppOfw.getAppId(), miniProgramAppOfw.getAppSecret(), suiteTicket.getConfigValue());
+                    // 根据临时授权码获取企业永久授权码
+                    JSONObject jsonObjectCode = getPermanentCode(authCode, jsonObjectToken.get("suite_access_token").toString());
+                    String permanentCode = jsonObjectCode.get("permanent_code").toString();
+                    JSONObject jsonCorpInfo = JSONObject.parseObject(jsonObjectCode.get("auth_corp_info").toString());
+                    String corpId = jsonCorpInfo.get("corpid").toString();
+                    String corpName = jsonCorpInfo.get("corp_name").toString();
+                    Corp corp = corpDaoMapper.getByCorpId(corpId);
+                    if (corp == null) {
+                        Corp c = new Corp();
+                        c.setId(TimestampGenerator.generateSerialNumber());
+                        c.setCorpId(corpId);
+                        c.setCorpName(corpName);
+                        c.setPermanentCode(permanentCode);
+                        c.setCreateTime(new Date());
+                        c.setUpdateTime(new Date());
+                        c.setDeleteFlag(Constant.DELETE_FLAG_NOT);
+                        corpDaoMapper.save(c);
+                    } else {
+                        corp.setPermanentCode(permanentCode);
+                        corp.setUpdateTime(new Date());
+                        corpDaoMapper.update(corp);
+                    }
+                }
+            }
+            logger.info("执行线程内结束====================");
+        }
+
     }
 
     class DataCheckThread implements Runnable {
