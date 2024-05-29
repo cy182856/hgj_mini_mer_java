@@ -199,7 +199,7 @@ public class VerifyController extends BaseController {
             if ("GET".equals(request.getMethod())) { // get请求表示是验证
                 String echostrDecrypt = null;
                 // 校验服务商公司id
-                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.OfwServiceCorpID);
+                WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(Constant.TOKEN, Constant.EncodingAESKey, Constant.ServiceCorpID);
                 echostrDecrypt = wxcpt.VerifyURL(msgSignature, timestamp, nonce, echostr);
                 logger.info("verifyurl echostr: " + echostrDecrypt);
                 response.setCharacterEncoding("UTF-8");
