@@ -111,10 +111,10 @@
             and w.WorkOrdState = 'WOSta_Proc'
         </if>
         <if test='repairStatus == "3"'>
-            and w.WorkOrdState in ('WOSta_Finish', 'WOSta_Visit')
-        </if>
-        <if test='repairStatus == "10"'>
             and w.WorkOrdState = 'WOSta_Finish'
+        </if>
+        <if test='repairStatus == "4"'>
+            and w.WorkOrdState = 'WOSta_Visit'
         </if>
         <if test="budIdList != null and budIdList.size() > 0">
             and h.BudID in
