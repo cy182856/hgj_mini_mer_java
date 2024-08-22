@@ -16,6 +16,8 @@ public interface CstIntoMapper {
 
     CstInto getByWxOpenId(String wxOpenId);
 
+    CstInto getByWxOpenIdAndStatus_1(String wxOpenId);
+
     List<CstInto> getList(CstInto cstInto);
 
     void save(CstInto cstInto);

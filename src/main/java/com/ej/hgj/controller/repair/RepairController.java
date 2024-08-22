@@ -279,6 +279,7 @@ public class RepairController extends BaseController {
 			repairLog.setWorkPos(workPos);
 			repairLog.setRepairType(repairRequestVo.getRepairType());
 			repairLog.setRepairStatus("WOSta_Sub");
+			repairLog.setCreateBy(userId);
 			repairLog.setCreateTime(new Date());
 			repairLog.setUpdateTime(new Date());
 			repairLog.setDeleteFlag(0);
