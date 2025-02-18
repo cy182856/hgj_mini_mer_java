@@ -10,7 +10,11 @@ import java.util.Date;
 public class CstInto {
     private String id;
 
+    private String projectNum;
+
     private String wxOpenId;
+
+    private String userName;
 
     private String cstCode;
 

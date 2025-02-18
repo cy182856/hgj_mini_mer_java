@@ -16,6 +16,7 @@ import com.ej.hgj.entity.config.ConstantConfig;
 import com.ej.hgj.entity.config.ProConfig;
 import com.ej.hgj.entity.config.RepairConfig;
 import com.ej.hgj.entity.cst.HgjCst;
+import com.ej.hgj.entity.file.FileMessage;
 import com.ej.hgj.entity.hu.HgjHouse;
 import com.ej.hgj.entity.repair.RepairLog;
 import com.ej.hgj.entity.user.User;
@@ -31,6 +32,7 @@ import com.ej.hgj.sy.dao.workord.ReturnVisitDaoMapper;
 import com.ej.hgj.sy.dao.workord.WorkOrdDaoMapper;
 import com.ej.hgj.sy.dao.workord.WorkPosDaoMapper;
 import com.ej.hgj.utils.*;
+import com.ej.hgj.utils.file.FileSendClient;
 import com.ej.hgj.vo.repair.RepairRequestVo;
 import com.ej.hgj.vo.repair.RepairResponseVo;
 import com.github.pagehelper.PageHelper;
@@ -46,6 +48,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +69,9 @@ public class RepairController extends BaseController {
 
 	@Value("${upload.path}")
 	private String uploadPath;
+
+	@Value("${upload.path.remote}")
+	private String uploadPathRemote;
 
 	@Autowired
 	private WorkOrdDaoMapper workOrdDaoMapper;
@@ -251,6 +258,7 @@ public class RepairController extends BaseController {
 		String p7 = initTicket(orgId, orgName, no, cstId, cstName,
 				woNoBasicId, woNoBasicName, quesTypeId, quesTypeName, houseId, workPos,
 				desc, desc, phone, fileList);
+		logger.info("报修信息|项目号：" + orgId + "|报修单号：" + no + "|客户名称:" + cstName + "|提交人:" + user.getUserName());
 		// 获取请求结果
 		JSONObject jsonObject = SyPostClient.callSy("User_Service_SaveWorkOrdInfoAndroid", p7, token, constantConfig.getConfigValue());
 		String status = jsonObject.getString("status");
@@ -263,8 +271,12 @@ public class RepairController extends BaseController {
 			repairResponseVo.setErrDesc(JiasvBasicRespCode.SUCCESS.getRespDesc());
 			// 保存报修记录
 			RepairLog repairLog = new RepairLog();
+			// 远程文件夹地址
+			String folderPathRemote = uploadPathRemote+"/repair/" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+			// 远程文件地址
+			String filePathRemote = folderPathRemote + "/" + no+".txt";
 			// 将图片数组转换为逗号分割的字符串
-			repairLog.setImage(saveImg(fileList,no));
+			repairLog.setImage(filePathRemote);
 			repairLog.setId(TimestampGenerator.generateSerialNumber());
 			repairLog.setProjectNum(orgId);
 			repairLog.setProjectName(orgName);
@@ -284,6 +296,18 @@ public class RepairController extends BaseController {
 			repairLog.setUpdateTime(new Date());
 			repairLog.setDeleteFlag(0);
 			repairLogDaoMapper.save(repairLog);
+			// 发送文件
+			try {
+				// 本地文件地址
+				String filePath = saveImg(fileList,no);
+				// 读取文件
+				byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+				// 创建文件消息对象
+				FileMessage fileMessage = new FileMessage(folderPathRemote, no+".txt", fileBytes);
+				FileSendClient.sendFile(fileMessage);
+			} catch (Exception e) {
+				logger.info("Error in Send: " + e.getMessage());
+			}
 		}else {
 			repairResponseVo.setRespCode(Constant.FAIL_CODE);
 			repairResponseVo.setErrDesc(msg);
@@ -304,12 +328,12 @@ public class RepairController extends BaseController {
 				sb.append(str);
 			}
 			//目录不存在则直接创建
-			File filePath = new File(uploadPath);
+			File filePath = new File(uploadPath + "/repair");
 			if (!filePath.exists()) {
 				filePath.mkdirs();
 			}
 			//创建年月日文件夹
-			File ymdFile = new File(uploadPath + File.separator + new SimpleDateFormat("yyyyMMdd").format(new Date()));
+			File ymdFile = new File(uploadPath + "/repair/" + new SimpleDateFormat("yyyyMMdd").format(new Date()));
 			//目录不存在则直接创建
 			if (!ymdFile.exists()) {
 				ymdFile.mkdirs();

@@ -46,7 +46,9 @@ public class Constant {
     // 客户报修单号
     public static String S_REPAIR_NUM = "s_repair_num";
 
-
+    // 远程文件服务器地址
+    public static final String REMOTE_FILE_URL = "http://192.168.5.250:18566";
+    //public static final String REMOTE_FILE_URL = "http://192.168.23.28:18566";
 
     // 服务商相关
     /**

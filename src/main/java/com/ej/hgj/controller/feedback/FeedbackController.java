@@ -1,5 +1,6 @@
 package com.ej.hgj.controller.feedback;
 
+import com.ej.hgj.constant.Constant;
 import com.ej.hgj.controller.base.BaseController;
 import com.ej.hgj.dao.config.ProConfDaoMapper;
 import com.ej.hgj.dao.cst.HgjCstDaoMapper;
@@ -7,6 +8,7 @@ import com.ej.hgj.dao.feedback.FeedbackDaoMapper;
 import com.ej.hgj.entity.feedback.FeedBack;
 import com.ej.hgj.enums.JiasvBasicRespCode;
 import com.ej.hgj.enums.MonsterBasicRespCode;
+import com.ej.hgj.utils.file.FileSendClient;
 import com.ej.hgj.vo.ResponseVo;
 import com.ej.hgj.vo.feedback.FeedbackRequestVo;
 import com.github.pagehelper.PageHelper;
@@ -55,28 +57,41 @@ public class FeedbackController extends BaseController {
 		responseVo.setTotalNum((int) pageInfo.getTotal());
 		responseVo.setPageSize(feedbackRequestVo.getPageSize());
 		if(list != null){
-			if(StringUtils.isNotBlank(id)) {
-				// 获取图片
-				String imgPath = list.get(0).getImage();
-				String base64Img = "";
-				try {
-					// 创建BufferedReader对象，从本地文件中读取
-					BufferedReader reader = new BufferedReader(new FileReader(imgPath));
-					// 逐行读取文件内容
-					String line = "";
-					while ((line = reader.readLine()) != null) {
-						base64Img += line;
-					}
-					// 关闭文件
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 
-				String[] fileList = base64Img.split(",");
-				//logger.info("报修图片:" + base64Img);
-				responseVo.setFileList(fileList);
+			if(StringUtils.isNotBlank(id)) {
+				// 获取文件路径
+				String imgPath = list.get(0).getImage();
+				// 拼接远程文件地址
+				String fileUrl = Constant.REMOTE_FILE_URL + "/" + imgPath;
+				String fileContent = FileSendClient.downloadFileContent(fileUrl);
+				if(StringUtils.isNotBlank(fileContent)) {
+					String[] fileList = fileContent.split(",");
+					responseVo.setFileList(fileList);
+				}
 			}
+
+//			if(StringUtils.isNotBlank(id)) {
+//				// 获取图片
+//				String imgPath = list.get(0).getImage();
+//				String base64Img = "";
+//				try {
+//					// 创建BufferedReader对象，从本地文件中读取
+//					BufferedReader reader = new BufferedReader(new FileReader(imgPath));
+//					// 逐行读取文件内容
+//					String line = "";
+//					while ((line = reader.readLine()) != null) {
+//						base64Img += line;
+//					}
+//					// 关闭文件
+//					reader.close();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//
+//				String[] fileList = base64Img.split(",");
+//				//logger.info("报修图片:" + base64Img);
+//				responseVo.setFileList(fileList);
+//			}
 		}
 		responseVo.setFeedbackList(list);
 		responseVo.setRespCode(MonsterBasicRespCode.SUCCESS.getReturnCode());
