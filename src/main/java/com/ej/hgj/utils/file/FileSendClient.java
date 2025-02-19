@@ -32,13 +32,13 @@ public class FileSendClient {
         String secret = "4251-ac0b-f33af9922533-4a38-adf6-0f8f50dfa04f-1ca0f257-5e7a-4ec2-bc44-480103e09042";
         String url = Constant.REMOTE_FILE_URL+"/File";
         try {
-            executeAsync(fileMessage,clientId,secret,url).get();
+            executeAsync(fileMessage,clientId,secret,url);
         } catch (Exception e) {
             logger.info("Error in Send: " + e.getMessage());
         }
     }
 
-    public static <T> Response executeAsync(T data, String clientId, String secret, String url) throws Exception {
+    public static <T> void executeAsync(T data, String clientId, String secret, String url) throws Exception {
         String nonce = UUID.randomUUID().toString();  // 生成随机的nonce值
         long timestamp = System.currentTimeMillis();  // 获取当前时间戳
 
@@ -59,10 +59,13 @@ public class FileSendClient {
         // 将请求对象转为JSON字符串
         String reqStr = objectMapper.writeValueAsString(reqDto);
 
-        // 发送请求并获得响应
-        String response = sendAsync(reqStr, url);
-        // 将响应结果反序列化为Response对象并返回
-        return objectMapper.readValue(response, Response.class);
+        // 发送请求
+        sendAsync(reqStr, url);
+
+//        // 发送请求并获得响应
+//        String response = sendAsync(reqStr, url);
+//        // 将响应结果反序列化为Response对象并返回
+//        return objectMapper.readValue(response, Response.class);
     }
 
     /**
@@ -72,7 +75,7 @@ public class FileSendClient {
      * @return 响应内容的字符串
      * @throws IOException
      */
-    private static String sendAsync(String bodyStr, String url) throws Exception {
+    private static void sendAsync(String bodyStr, String url) throws Exception {
         HttpURLConnection connection = null;
         try {
             // 创建HTTP连接
@@ -93,18 +96,12 @@ public class FileSendClient {
             int statusCode = connection.getResponseCode();
             // 判断是否成功
             if (statusCode == HttpURLConnection.HTTP_OK) {
-                logger.info("文件发送成功：url:" + url+"||data:"+bodyStr);
-                // 读取响应体并返回
-                try (InputStream is = connection.getInputStream()) {
-                    return connection.getContent()+"";
-                }
+                logger.info("文件发送成功：url:" + url);
+                //return "ok";
             } else {
-                logger.info("文件发送失败：url:" + url+"||data:"+bodyStr);
+                logger.info("文件发送失败：url:" + url);
                 // 处理错误响应
-                try (InputStream is = connection.getErrorStream()) {
-                    String responseBody = connection.getContent()+"";
-                    throw new Exception("Request failed: " + statusCode + ", Response: " + responseBody);
-                }
+                //return "error";
             }
         } finally {
             // 关闭连接
